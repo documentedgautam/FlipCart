@@ -8,7 +8,20 @@ const ApiError = require("../utils/ApiError");
  * - Fetch user object from Mongo using the "_id" field and return user object
  * @param {String} id
  * @returns {Promise<User>}
+ * @throws {ApiError}
  */
+getUserById = async function(id){
+    return new Promise((resolve, reject) => {
+        User.findById({_id: id}, (err, res) => {
+            if(err){
+                throw new ApiError(httpStatus.OK, `No user is found by ID ${id}`);
+            }
+            else{
+                resolve(res);
+            }
+        });
+    });
+}
 
 // TODO: CRIO_TASK_MODULE_UNDERSTANDING_BASICS - Implement getUserByEmail(email)
 /**
@@ -16,7 +29,20 @@ const ApiError = require("../utils/ApiError");
  * - Fetch user object from Mongo using the "email" field and return user object
  * @param {string} email
  * @returns {Promise<User>}
+ * @throws {ApiError}
  */
+getUserByEmail = async function(email){
+    return new Promise((resolve, reject) => {
+        User.findOne({"email": email}, (err, res) => {
+            if(err){
+                throw new ApiError(httpStatus.OK, `No user is found by Email ${email}`);
+            }
+            else{
+                resolve(res);
+            }
+        });
+    });
+}
 
 // TODO: CRIO_TASK_MODULE_UNDERSTANDING_BASICS - Implement createUser(user)
 /**
@@ -40,5 +66,19 @@ const ApiError = require("../utils/ApiError");
  *
  * 200 status code on duplicate email - https://stackoverflow.com/a/53144807
  */
-
+createUser = async function(user){
+    if(User.isEmailTaken(user.email)){
+        throw new ApiError(httpStatus.OK, "Email already taken");
+    }
+    return new Promise((resolve, reject) => {
+        User.insertOne(user, (err, res) => {
+            if(err){
+                throw new ApiError(httpStatus.OK, "DBERROR: Can not insert the user");
+            }
+            else{
+                resolve(res.ops[0]);
+            }
+        });
+    });
+}
 

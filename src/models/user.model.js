@@ -13,18 +13,38 @@ const userSchema = mongoose.Schema(
       trim: true,
     },
     email: {
+      type: String,
+      required: true,
+      trim: true,
+      validate(value) {
+        if(isEmailTaken(value)){
+          throw new Error(
+            "Email is already taken!!"
+          );
+        }
+        else if(!value.match(/^[a-zA-Z0-9.]+@[a-zA-Z0-9]+(?:\.[a-zA-Z0-9]+)*$/)){
+          throw new Error(
+            "Email must be of form xxx@xx.x where x can be a-z, A-Z, 0-9, . "
+          );
+        }
+      }
     },
     password: {
       type: String,
+      required: true,
+      trim: true,
       validate(value) {
-        if (!value.match(/\d/) || !value.match(/[a-zA-Z]/)) {
+        if (value.length < 8 || !value.match(/\d/) || !value.match(/[a-zA-Z]/)) {
           throw new Error(
-            "Password must contain at least one letter and one number"
+            "Password must contain at least one letter and one number and length must be greater than 7"
           );
         }
       },
     },
     walletMoney: {
+      type: Number,
+      required: true,
+      default: config.default_wallet_money,
     },
     address: {
       type: String,
@@ -44,6 +64,17 @@ const userSchema = mongoose.Schema(
  * @returns {Promise<boolean>}
  */
 userSchema.statics.isEmailTaken = async function (email) {
+  return new Promise((resolve, reject) => {
+    User.findOne({"email": email}, (err, res) => {
+      if(err){
+        resolve(false);
+      }
+      else{
+        console.log("Email exists for ", res);
+        resolve(true);
+      }
+    });
+  });
 };
 
 
@@ -55,5 +86,6 @@ userSchema.statics.isEmailTaken = async function (email) {
  * const User = require("<user.model file path>").User;
  */
 /**
- * @typedef User
+ * @typedef {Object} User
  */
+module.exports = {User : mongoose.model("users", userSchema)};
