@@ -63,7 +63,7 @@ const userSchema = mongoose.Schema(
  * @param {string} email - The user's email
  * @returns {Promise<boolean>}
  */
-userSchema.statics.isEmailTaken = async function (email) {
+userSchema.statics.isEmailTaken = async (email) => {
   return new Promise((resolve, reject) => {
     User.findOne({"email": email}, (err, res) => {
       if(err){

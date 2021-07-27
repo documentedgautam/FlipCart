@@ -10,7 +10,7 @@ const ApiError = require("../utils/ApiError");
  * @returns {Promise<User>}
  * @throws {ApiError}
  */
-getUserById = async function(id){
+getUserById = async (id) => {
     return new Promise((resolve, reject) => {
         User.findById({_id: id}, (err, res) => {
             if(err){
@@ -31,7 +31,7 @@ getUserById = async function(id){
  * @returns {Promise<User>}
  * @throws {ApiError}
  */
-getUserByEmail = async function(email){
+getUserByEmail = async (email) => {
     return new Promise((resolve, reject) => {
         User.findOne({"email": email}, (err, res) => {
             if(err){
@@ -66,12 +66,12 @@ getUserByEmail = async function(email){
  *
  * 200 status code on duplicate email - https://stackoverflow.com/a/53144807
  */
-createUser = async function(user){
-    if(User.isEmailTaken(user.email)){
+createUser = async (userBody) => {
+    if(User.isEmailTaken(userBody.email)){
         throw new ApiError(httpStatus.OK, "Email already taken");
     }
     return new Promise((resolve, reject) => {
-        User.insertOne(user, (err, res) => {
+        User.insertOne(userBody, (err, res) => {
             if(err){
                 throw new ApiError(httpStatus.OK, "DBERROR: Can not insert the user");
             }
