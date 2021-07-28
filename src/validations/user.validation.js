@@ -1,5 +1,6 @@
 const Joi = require("joi");
-const { objectId } = require("./custom.validation");
+const { objectId, password } = require("./custom.validation");
+const {isEmailTaken} = require("../models/user.model");
 
 // TODO: CRIO_TASK_MODULE_UNDERSTANDING_BASICS - Implement request validation for "/v1/users/:userId" endpoint
 /**
@@ -10,9 +11,14 @@ const { objectId } = require("./custom.validation");
  */
 const getUser = {
   params: Joi.object().keys({
+    _id: Joi.custom(objectId),
+    name: Joi.string().trim().required(),
+    email: Joi.string().lowercase().trim().required(),
+    password: Joi.string().min(8).custom(password),
+    walletMoney: Joi.number().required(),
+    address: Joi.string(),
   }),
 };
-
 
 module.exports = {
   getUser,

@@ -22,9 +22,9 @@ const userSchema = mongoose.Schema(
             "Email is already taken!!"
           );
         }
-        else if(!value.match(/^[a-zA-Z0-9.]+@[a-zA-Z0-9]+(?:\.[a-zA-Z0-9]+)*$/)){
+        else if(!value.match(/^[a-z0-9.]+@[a-z0-9]+(?:\.[a-z0-9]+)*$/)){
           throw new Error(
-            "Email must be of form xxx@xx.x where x can be a-z, A-Z, 0-9, . "
+            "Email must be of form xxx@xx.x where x can be a-z, 0-9, . "
           );
         }
       }
@@ -67,7 +67,7 @@ userSchema.statics.isEmailTaken = async (email) => {
   return new Promise((resolve, reject) => {
     User.findOne({"email": email}, (err, res) => {
       if(err){
-        resolve(false);
+        reject(false);
       }
       else{
         console.log("Email exists for ", res);
@@ -86,6 +86,11 @@ userSchema.statics.isEmailTaken = async (email) => {
  * const User = require("<user.model file path>").User;
  */
 /**
- * @typedef {Object} User
+ * 
  */
-module.exports = {User : mongoose.model("users", userSchema)};
+const user = mongoose.model("users", userSchema)
+module.exports = {
+  User : user,
+  isEmailTaken: userSchema.statics.isEmailTaken
+  // isEmailTaken: userSchema.statics.isEmailTaken
+};

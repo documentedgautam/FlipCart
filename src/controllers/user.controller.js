@@ -43,6 +43,7 @@ const getUser = catchAsync(async (req, res) => {
   userService.getUserById(req.url.split('/')[1]).then((result) => {
     console.log(result);
     res.status(httpStatus.OK).send(result);
+    // res.send(httpStatus.OK);
   }).catch((err) => {
     console.log(err);
     res.status(httpStatus.NOT_FOUND).send(err);

@@ -7,9 +7,4 @@ const router = express.Router();
 
 router.use('/users', userRoute);
 
-// router.use("*", (req, res) => {
-//     console.log("hey there");
-//     console.log(req.url, req.body, req.query);
-// }); 
-
 module.exports = router;

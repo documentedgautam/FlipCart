@@ -11,9 +11,10 @@ const ApiError = require("../utils/ApiError");
  * @throws {ApiError}
  */
 getUserById = async (id) => {
-    console.log("In getUserByID with id:", id);
+    // console.log("In getUserByID with id:", id);
     return new Promise((resolve, reject) => {
         User.findById({_id: id}, (err, res) => {
+            // console.log("result here", res);
             if(err){
                 throw new ApiError(httpStatus.OK, `No user is found by ID ${id}`);
             }
@@ -39,6 +40,7 @@ getUserByEmail = async (email) => {
                 throw new ApiError(httpStatus.OK, `No user is found by Email ${email}`);
             }
             else{
+                // console.log("user by email here",res);
                 resolve(res);
             }
         });
@@ -72,14 +74,8 @@ createUser = async (userBody) => {
         throw new ApiError(httpStatus.OK, "Email already taken");
     }
     return new Promise((resolve, reject) => {
-        User.insertOne(userBody, (err, res) => {
-            if(err){
-                throw new ApiError(httpStatus.OK, "DBERROR: Can not insert the user");
-            }
-            else{
-                resolve(res.ops[0]);
-            }
-        });
+        const user = User.create(userBody);
+        resolve(user);
     });
 }
 

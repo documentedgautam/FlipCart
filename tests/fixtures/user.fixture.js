@@ -27,7 +27,7 @@ const userTwo = {
 };
 
 const insertUsers = async (users) => {
-  await User.insertMany(
+  User.insertMany(
     users.map((user) => ({ ...user, password: hashedPassword }))
   );
 };
