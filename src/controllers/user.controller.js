@@ -39,6 +39,14 @@ const { userService } = require("../services");
  *
  */
 const getUser = catchAsync(async (req, res) => {
+  console.log("getUser",req.url);
+  userService.getUserById(req.url.split('/')[1]).then((result) => {
+    console.log(result);
+    res.status(httpStatus.OK).send(result);
+  }).catch((err) => {
+    console.log(err);
+    res.status(httpStatus.NOT_FOUND).send(err);
+  });;
 });
 
 

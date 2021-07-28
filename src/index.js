@@ -7,6 +7,17 @@ let server;
 
 // TODO: CRIO_TASK_MODULE_UNDERSTANDING_BASICS - Create Mongo connection and get the express app to listen on config.port
 
+mongoose.connect(config.mongoose.url, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+  useCreateIndex: true,
+  useFindAndModify: false,
+}, () => {console.log("Connected to MongoDB");});
+
+app.listen(config.port, () => {
+  console.log(`Server listening on PORT: ${config.port}`);
+});
+
 // ------------- Don't Modify  -------------
 const exitHandler = () => {
   if (server) {

@@ -11,6 +11,7 @@ const ApiError = require("../utils/ApiError");
  * @throws {ApiError}
  */
 getUserById = async (id) => {
+    console.log("In getUserByID with id:", id);
     return new Promise((resolve, reject) => {
         User.findById({_id: id}, (err, res) => {
             if(err){
@@ -82,3 +83,8 @@ createUser = async (userBody) => {
     });
 }
 
+module.exports = {
+    getUserById,
+    getUserByEmail,
+    createUser,
+  };
