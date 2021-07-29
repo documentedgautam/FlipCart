@@ -2,6 +2,7 @@ const { Strategy: JwtStrategy, ExtractJwt } = require("passport-jwt");
 const config = require("./config");
 const { tokenTypes } = require("./tokens");
 const { User } = require("../models");
+const userServices = require("../services/user.service");
 
 // TODO: CRIO_TASK_MODULE_AUTH - Set mechanism to retrieve Jwt token from user request
 /**
@@ -28,8 +29,10 @@ jwtOptions.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken();
  */
 const jwtVerify = async (payload, done) => {
   try{
-    const user = User.findById(payload.sub);
+    // const user = await userServices.getUserById(payload.sub);
+    const user = await User.findById(payload.sub);
     if(user){
+      console.log(user.name, payload.sub);
       done(null, user);
     }
     else{

@@ -17,10 +17,11 @@ const { tokenTypes } = require("../config/tokens");
  * @returns {string}
  */
 const generateToken = (userId, expires, type, secret = config.jwt.secret) => {
-  return jwt.sign({
+  const token = jwt.sign({
     "sub": userId,
     "type": type
   }, secret, {expiresIn: expires.toString()+'m'});
+  return token;
 };
 
 /**
@@ -41,15 +42,16 @@ const generateToken = (userId, expires, type, secret = config.jwt.secret) => {
 const generateAuthTokens = async (user) => {
   const expires = process.env.JWT_ACCESS_EXPIRATION_MINUTES;
   const token = generateToken(user.userId, expires, "ACCESS");
-
-  return {
+  // console.log("In generateAuthTokens", user.userId, token);
+  const ret = {
     "access": {
       "token": token,
       "expires": new Date((new Date()).getTime()+expires*60000)
     }
   };
+  return ret;
 };
-
+// console.log(generateAuthTokens({userId: "600a695da6e5b6845906e726"}));
 module.exports = {
   generateToken,
   generateAuthTokens,
