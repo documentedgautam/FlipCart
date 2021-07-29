@@ -10,8 +10,6 @@ const router = express.Router();
 router.get('/:userId', validate(userValidation.getUser), userController.getUser);
 const auth = require("../../middlewares/auth");
 
-const router = express.Router();
-
 
 
 module.exports = router;
