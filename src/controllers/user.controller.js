@@ -39,7 +39,7 @@ const { userService } = require("../services");
  *
  */
 const getUser = catchAsync(async (req, res) => {
-  // console.log("getUser",req.url, req.params.userId);
+  console.log("getUser",req.url, req.params.userId);
   const user = await userService.getUserById(req.params.userId);
   if(user){
     // console.log(user);
