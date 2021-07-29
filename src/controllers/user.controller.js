@@ -39,15 +39,12 @@ const { userService } = require("../services");
  *
  */
 const getUser = catchAsync(async (req, res) => {
-  console.log("getUser",req.url);
-  userService.getUserById(req.url.split('/')[1]).then((result) => {
-    console.log(result);
-    res.status(httpStatus.OK).send(result);
-    // res.send(httpStatus.OK);
-  }).catch((err) => {
-    console.log(err);
-    res.status(httpStatus.NOT_FOUND).send(err);
-  });;
+  // console.log("getUser",req.url, req.params.userId);
+  const user = await userService.getUserById(req.params.userId);
+  if(user){
+    // console.log(user);
+    res.send(user);
+  }
 });
 
 

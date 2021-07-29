@@ -11,18 +11,8 @@ const ApiError = require("../utils/ApiError");
  * @throws {ApiError}
  */
 getUserById = async (id) => {
-    // console.log("In getUserByID with id:", id);
-    return new Promise((resolve, reject) => {
-        User.findById({_id: id}, (err, res) => {
-            // console.log("result here", res);
-            if(err){
-                throw new ApiError(httpStatus.OK, `No user is found by ID ${id}`);
-            }
-            else{
-                resolve(res);
-            }
-        });
-    });
+    const user =  await User.findById(id);
+    return user;
 }
 
 // TODO: CRIO_TASK_MODULE_UNDERSTANDING_BASICS - Implement getUserByEmail(email)
@@ -34,17 +24,8 @@ getUserById = async (id) => {
  * @throws {ApiError}
  */
 getUserByEmail = async (email) => {
-    return new Promise((resolve, reject) => {
-        User.findOne({"email": email}, (err, res) => {
-            if(err){
-                throw new ApiError(httpStatus.OK, `No user is found by Email ${email}`);
-            }
-            else{
-                // console.log("user by email here",res);
-                resolve(res);
-            }
-        });
-    });
+    const user =  await User.findOne(email);
+    return user;
 }
 
 // TODO: CRIO_TASK_MODULE_UNDERSTANDING_BASICS - Implement createUser(user)
@@ -70,13 +51,12 @@ getUserByEmail = async (email) => {
  * 200 status code on duplicate email - https://stackoverflow.com/a/53144807
  */
 createUser = async (userBody) => {
+    // console.log(userBody);
     if(User.isEmailTaken(userBody.email)){
         throw new ApiError(httpStatus.OK, "Email already taken");
     }
-    return new Promise((resolve, reject) => {
-        const user = User.create(userBody);
-        resolve(user);
-    });
+    const user = await User.create(userBody);
+    return user;
 }
 
 module.exports = {

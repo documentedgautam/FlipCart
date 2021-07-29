@@ -17,15 +17,8 @@ const userSchema = mongoose.Schema(
       required: true,
       trim: true,
       validate(value) {
-        if(isEmailTaken(value)){
-          throw new Error(
-            "Email is already taken!!"
-          );
-        }
-        else if(!value.match(/^[a-z0-9.]+@[a-z0-9]+(?:\.[a-z0-9]+)*$/)){
-          throw new Error(
-            "Email must be of form xxx@xx.x where x can be a-z, 0-9, . "
-          );
+        if (!validator.isEmail(value)) {
+          throw new Error("Invalid email");
         }
       }
     },
@@ -56,6 +49,8 @@ const userSchema = mongoose.Schema(
     timestamps: true,
   }
 );
+
+const User = mongoose.model("users", userSchema)
 
 // TODO: CRIO_TASK_MODULE_UNDERSTANDING_BASICS - Implement the isEmailTaken() static method
 /**
@@ -88,9 +83,5 @@ userSchema.statics.isEmailTaken = async (email) => {
 /**
  * 
  */
-const user = mongoose.model("users", userSchema)
-module.exports = {
-  User : user,
-  isEmailTaken: userSchema.statics.isEmailTaken
-  // isEmailTaken: userSchema.statics.isEmailTaken
-};
+
+module.exports = {User};

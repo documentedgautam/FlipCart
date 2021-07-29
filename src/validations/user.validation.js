@@ -11,12 +11,12 @@ const {isEmailTaken} = require("../models/user.model");
  */
 const getUser = {
   params: Joi.object().keys({
-    _id: Joi.custom(objectId),
-    name: Joi.string().trim().required(),
-    email: Joi.string().lowercase().trim().required(),
-    password: Joi.string().min(8).custom(password),
-    walletMoney: Joi.number().required(),
-    address: Joi.string(),
+    userId: Joi.string().custom(objectId),
+    // name: Joi.string().trim().required(),
+    // email: Joi.string().lowercase().trim().required(),
+    // password: Joi.string().min(8).trim().required().custom(password),
+    // walletMoney: Joi.number().required(),
+    // address: Joi.string(),
   }),
 };
 
