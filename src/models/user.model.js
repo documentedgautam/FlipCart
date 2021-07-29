@@ -4,7 +4,6 @@ const validator = require("validator");
 const bcrypt = require("bcryptjs");
 const config = require("../config/config");
 
-// TODO: CRIO_TASK_MODULE_UNDERSTANDING_BASICS - Complete userSchema, a Mongoose schema for "users" collection
 const userSchema = mongoose.Schema(
   {
     name: {
@@ -50,7 +49,7 @@ const userSchema = mongoose.Schema(
   }
 );
 
-const User = mongoose.model("users", userSchema)
+const User = mongoose.model("users", userSchema);
 
 // TODO: CRIO_TASK_MODULE_UNDERSTANDING_BASICS - Implement the isEmailTaken() static method
 /**
@@ -70,11 +69,18 @@ userSchema.statics.isEmailTaken = async (email) => {
       }
     });
   });
+}
+
+/**
+ * Check if entered password matches the user's password
+ * @param {string} password
+ * @returns {Promise<boolean>}
+ */
+userSchema.methods.isPasswordMatch = async function (password) {
 };
 
 
 
-// TODO: CRIO_TASK_MODULE_UNDERSTANDING_BASICS
 /*
  * Create a Mongoose model out of userSchema and export the model as "User"
  * Note: The model should be accessible in a different module when imported like below

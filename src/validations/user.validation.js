@@ -2,7 +2,6 @@ const Joi = require("joi");
 const { objectId, password } = require("./custom.validation");
 const {isEmailTaken} = require("../models/user.model");
 
-// TODO: CRIO_TASK_MODULE_UNDERSTANDING_BASICS - Implement request validation for "/v1/users/:userId" endpoint
 /**
  * Example url: `/v1/users/:userId`
  * Validate the "userId" url *params* field. "userId" value should be a

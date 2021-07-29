@@ -19,6 +19,7 @@ app.listen(config.port, () => {
 });
 
 // ------------- Don't Modify  -------------
+
 const exitHandler = () => {
   if (server) {
     server.close(() => {
