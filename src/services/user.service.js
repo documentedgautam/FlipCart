@@ -24,7 +24,7 @@ getUserById = async (id) => {
  * @throws {ApiError}
  */
 getUserByEmail = async (email) => {
-    const user =  await User.findOne(email);
+    const user =  await User.findOne({"email": email});
     return user;
 }
 
@@ -53,9 +53,11 @@ getUserByEmail = async (email) => {
 createUser = async (userBody) => {
     // console.log(userBody);
     if(User.isEmailTaken(userBody.email)){
-        throw new ApiError(httpStatus.OK, "Email already taken");
+        console.log("throw error", userBody.email);
+        return Promise.reject(new ApiError(httpStatus.OK, "Email already taken"));
     }
     const user = await User.create(userBody);
+    // console.log(user);
     return user;
 }
 

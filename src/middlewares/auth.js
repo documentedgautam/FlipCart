@@ -14,12 +14,13 @@ const ApiError = require("../utils/ApiError");
  */
 const verifyCallback = (req, resolve, reject) => async (err, user, info) => {
   console.log(req.params.userId, user._id, (req.params.userId != user._id))
-  if(req.params.userId != user._id){
-    reject(new ApiError(httpStatus.UNAUTHORIZED, "You are not permitted to access this data"));
+  console.log("verifyyyyyyyy",req.body.email, req.params.userId);
+  if(!req.params.userId || (req.params.userId != user._id)){
+    reject(new ApiError(httpStatus.FORBIDDEN, "You are not permitted to access this data"));
   }
   if(user){
-    console.log(user);
-    req.user = user;
+    // console.log(user);
+    req.body = user;
     resolve();
   }
   reject(new ApiError(httpStatus.UNAUTHORIZED, "Please authenticate"));
