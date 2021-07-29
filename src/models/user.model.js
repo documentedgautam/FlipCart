@@ -4,6 +4,8 @@ const validator = require("validator");
 const bcrypt = require("bcryptjs");
 const config = require("../config/config");
 
+const SALT_WORK_FACTOR = 10;
+
 const userSchema = mongoose.Schema(
   {
     name: {
@@ -49,7 +51,26 @@ const userSchema = mongoose.Schema(
   }
 );
 
-const User = mongoose.model("users", userSchema);
+userSchema.pre("save", function(next) {
+  var user = this;
+
+  if (!user.isModified('password')){
+    return next();
+  }
+
+  bcrypt.genSalt(SALT_WORK_FACTOR, function(err, salt) {
+    if (err){
+      return next(err);
+    }
+    bcrypt.hash(user.password, salt, function(err, hash) {
+        if (err){
+          return next(err);
+        }
+        user.password = hash;
+        next();
+    });
+  });
+});
 
 // TODO: CRIO_TASK_MODULE_UNDERSTANDING_BASICS - Implement the isEmailTaken() static method
 /**
@@ -57,18 +78,12 @@ const User = mongoose.model("users", userSchema);
  * @param {string} email - The user's email
  * @returns {Promise<boolean>}
  */
-userSchema.statics.isEmailTaken = async (email) => {
-  return new Promise((resolve, reject) => {
-    User.findOne({"email": email}, (err, res) => {
-      if(err){
-        reject(false);
-      }
-      else{
-        console.log("Email exists for ", res);
-        resolve(true);
-      }
-    });
-  });
+userSchema.statics.isEmailTaken = async function (email){
+  const isTaken = await this.findOne({"email": email});
+  if(isTaken){
+    return true;
+  }
+  return false;
 }
 
 /**
@@ -77,6 +92,12 @@ userSchema.statics.isEmailTaken = async (email) => {
  * @returns {Promise<boolean>}
  */
 userSchema.methods.isPasswordMatch = async function (password) {
+  bcrypt.compare(password, this.password, function(err, isMatch) {
+    if (err){
+      return false;
+    }
+    return true;
+  });
 };
 
 
@@ -89,5 +110,6 @@ userSchema.methods.isPasswordMatch = async function (password) {
 /**
  * 
  */
+const User = mongoose.model("users", userSchema);
 
 module.exports = {User};

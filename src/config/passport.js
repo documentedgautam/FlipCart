@@ -32,7 +32,7 @@ const jwtVerify = async (payload, done) => {
     // const user = await userServices.getUserById(payload.sub);
     const user = await User.findById(payload.sub);
     if(user){
-      console.log(user.name, payload.sub);
+      // console.log(user.name, payload.sub);
       done(null, user);
     }
     else{
