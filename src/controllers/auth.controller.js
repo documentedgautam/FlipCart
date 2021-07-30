@@ -1,6 +1,8 @@
 const httpStatus = require("http-status");
 const catchAsync = require("../utils/catchAsync");
 const { authService, userService, tokenService } = require("../services");
+const validator = require("validator");
+const ApiError = require("../utils/ApiError");
 
 /**
  * Perform the following steps:
@@ -32,18 +34,22 @@ const { authService, userService, tokenService } = require("../services");
  *
  */
 const register = catchAsync(async (req, res) => {
+  if(!validator.isEmail(req.body.email)){
+    return Promise.reject(new ApiError(httpStatus.BAD_REQUEST, "Invalid Email"));
+  }
   const user = await userService.createUser({
     name: req.body.name,
     email: req.body.email,
     password: req.body.password,
   });
-  console.log("register", req.body.name, user);
+  console.log("register", req.body.name);
+  console.log("register2", user.userId, user._id);
   const tokens = await tokenService.generateAuthTokens(user);
   const registeredUser = {
     "user": user,
     "tokens": tokens,
   };
-  console.log(registeredUser);
+  // console.log(registeredUser);
   res.status(httpStatus.CREATED).send(registeredUser);
 });
 

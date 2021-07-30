@@ -13,17 +13,27 @@ const ApiError = require("../utils/ApiError");
  * --- resolve the promise
  */
 const verifyCallback = (req, resolve, reject) => async (err, user, info) => {
-  console.log(req.params.userId, user._id, (req.params.userId != user._id))
-  console.log("verifyyyyyyyy",req.body.email, req.params.userId);
-  if(!req.params.userId || (req.params.userId != user._id)){
-    reject(new ApiError(httpStatus.FORBIDDEN, "You are not permitted to access this data"));
+  const id = req.params.userId;
+  console.log(user.name, user.email);
+  if(err){
+    reject(new ApiError(httpStatus.UNAUTHORIZED, err.message));
   }
-  if(user){
-    // console.log(user);
-    req.body = user;
+  else if(!user){
+    reject(new ApiError(httpStatus.UNAUTHORIZED, "Please Authenticate"));
+  }
+  else{
+    console.log("verifycalllback1", user._id, user.email, user.password);
+    if(!id || !id.match(/^[0-9a-fA-F]{24}$/)){
+      console.log(id, "This is Invalid");
+      reject(new ApiError(httpStatus.BAD_REQUEST, "Invalid MongoId"));
+    }
+    if(user._id != req.params.userId){
+      reject(new ApiError(httpStatus.FORBIDDEN, "No access"));
+    }
+    console.log("verifycalllback2", user._id, user.email);
+    req.user = user;
     resolve();
   }
-  reject(new ApiError(httpStatus.UNAUTHORIZED, "Please authenticate"));
 };
 
 /**

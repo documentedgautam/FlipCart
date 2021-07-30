@@ -80,10 +80,11 @@ userSchema.pre("save", function(next) {
  */
 userSchema.statics.isEmailTaken = async function (email){
   const isTaken = await this.findOne({"email": email});
-  if(isTaken){
-    return true;
+  // console.log(isTaken);
+  if(isTaken === null){
+    return false;
   }
-  return false;
+  return true;
 }
 
 /**

@@ -16,8 +16,10 @@ const ApiError = require("../utils/ApiError");
  */
 const loginUserWithEmailAndPassword = async (email, password) => {
   const user = await userService.getUserByEmail(email);
+  console.log(user, email);
   if(user){
     const isMatch = await user.isPasswordMatch(password);
+    // console.log("loginmailpassword", user, isMatch);
     if(isMatch){
       return user;
     }

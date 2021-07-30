@@ -52,8 +52,8 @@ getUserByEmail = async (email) => {
  */
 createUser = async (userBody) => {
     // console.log(userBody);
-    if(User.isEmailTaken(userBody.email)){
-        console.log("throw error", userBody.email);
+    const isTaken = await User.isEmailTaken(userBody.email);
+    if(isTaken){
         return Promise.reject(new ApiError(httpStatus.OK, "Email already taken"));
     }
     const user = await User.create(userBody);
