@@ -10,12 +10,9 @@ const { password } = require("./custom.validation");
  */
 const register = {
   body: Joi.object().keys({
-    // userId: Joi.string().custom(objectId),
     name: Joi.string().trim().required(),
     email: Joi.string().lowercase().trim().required(),
     password: Joi.string().min(8).trim().required().custom(password),
-    // walletMoney: Joi.number().required(),
-    // address: Joi.string(),
   }),
 };
 
@@ -26,12 +23,8 @@ const register = {
  */
 const login = {
   body: Joi.object().keys({
-    // userId: Joi.string().custom(objectId),
-    // name: Joi.string().trim().required(),
     email: Joi.string().lowercase().trim().required(),
     password: Joi.string().min(8).trim().required().custom(password),
-    // walletMoney: Joi.number().required(),
-    // address: Joi.string(),
   }),
 };
 

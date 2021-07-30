@@ -24,7 +24,8 @@ getUserById = async (id) => {
  * @throws {ApiError}
  */
 getUserByEmail = async (email) => {
-    const user =  await User.findOne({"email": email});
+    const user =  await User.findOne({email: email});
+    // console.log(user, "In getuserbyemail")
     return user;
 }
 

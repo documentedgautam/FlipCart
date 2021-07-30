@@ -13,39 +13,50 @@ const ApiError = require("../utils/ApiError");
  * --- resolve the promise
  */
 const verifyCallback = (req, resolve, reject) => async (err, user, info) => {
-  const id = req.params.userId;
-  console.log(user.name, user.email);
-  if(err){
-    reject(new ApiError(httpStatus.UNAUTHORIZED, err.message));
+  if (err || info || !user) {
+    // console.log(user);
+    reject(new ApiError(httpStatus.UNAUTHORIZED, "Please authenticate"));
   }
-  else if(!user){
-    reject(new ApiError(httpStatus.UNAUTHORIZED, "Please Authenticate"));
-  }
-  else{
-    console.log("verifycalllback1", user._id, user.email, user.password);
-    if(!id || !id.match(/^[0-9a-fA-F]{24}$/)){
-      console.log(id, "This is Invalid");
-      reject(new ApiError(httpStatus.BAD_REQUEST, "Invalid MongoId"));
-    }
-    if(user._id != req.params.userId){
-      reject(new ApiError(httpStatus.FORBIDDEN, "No access"));
-    }
-    console.log("verifycalllback2", user._id, user.email);
-    req.user = user;
-    resolve();
-  }
+  req.user = user;
+
+  resolve();
 };
 
 /**
  * Auth middleware to authenticate using Passport "jwt" strategy with sessions disabled and a custom callback function
  * 
  */
+
+// const auth = () => async (req, res, next) => {
+//   return new Promise((resolve, reject) => {
+//        passport.authenticate('jwt',  { session: false },
+//       (err,user,info) => {
+//         if(err){
+//           const error = new ApiError(httpStatus.UNAUTHORIZED, "Please Authenticate");
+//           reject(error);
+//         }
+//         if(!user){
+//           const error = new ApiError(httpStatus.UNAUTHORIZED,  "Please Authenticate");
+//           reject(error);
+//         }
+//         req.user = user;
+//         resolve();
+//       })(req,res,next)
+//   })
+//     .then(() => next())
+//     .catch((err) => next(err));
+// };
+
 const auth = () => async (req, res, next) => {
   return new Promise((resolve, reject) => {
     // TODO: CRIO_TASK_MODULE_AUTH - Authenticate request
-    passport.authenticate("jwt",
+    // CRIO_SOLUTION_START_MODULE_AUTH
+    passport.authenticate(
+      "jwt",
       { session: false },
-      verifyCallback(req, resolve, reject))(req, res, next);
+      verifyCallback(req, resolve, reject)
+    )(req, res, next);
+    // CRIO_SOLUTION_END_MODULE_AUTH
   })
     .then(() => next())
     .catch((err) => next(err));

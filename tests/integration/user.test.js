@@ -13,7 +13,7 @@ describe("User routes", () => {
     describe("GET specific user", () => {
       test("should return 200 and the user object if data is ok", async () => {
         await insertUsers([userOne]);
-        console.log(userOne._id);
+        // console.log(userOne._id);
         const res = await request(app)
           .get(`/v1/users/${userOne._id}`)
           .set("Authorization", `Bearer ${userOneAccessToken}`)

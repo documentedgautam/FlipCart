@@ -35,22 +35,26 @@ const ApiError = require("../utils/ApiError");
  */
 const register = catchAsync(async (req, res) => {
   if(!validator.isEmail(req.body.email)){
-    return Promise.reject(new ApiError(httpStatus.BAD_REQUEST, "Invalid Email"));
+    throw new ApiError(httpStatus.BAD_REQUEST, "Invalid Email");
   }
-  const user = await userService.createUser({
-    name: req.body.name,
-    email: req.body.email,
-    password: req.body.password,
-  });
-  console.log("register", req.body.name);
-  console.log("register2", user.userId, user._id);
+  const user = await userService.createUser(req.body);
   const tokens = await tokenService.generateAuthTokens(user);
-  const registeredUser = {
-    "user": user,
-    "tokens": tokens,
-  };
-  // console.log(registeredUser);
-  res.status(httpStatus.CREATED).send(registeredUser);
+  res.status(httpStatus.CREATED).send({ user, tokens });
+  
+  // const user = await userService.createUser({
+  //   name: req.body.name,
+  //   email: req.body.email,
+  //   password: req.body.password,
+  // });
+  // // console.log("register", req.body.name);
+  // // console.log("register2", user.userId, user._id);
+  // const tokens = await tokenService.generateAuthTokens(user);
+  // const registeredUser = {
+  //   "user": user,
+  //   "tokens": tokens,
+  // };
+  // // console.log(registeredUser);
+  // res.status(httpStatus.CREATED).send(registeredUser);
 });
 
 /**
@@ -83,21 +87,19 @@ const register = catchAsync(async (req, res) => {
  *
  */
 const login = catchAsync(async (req, res) => {
-  const isValid = await authService.loginUserWithEmailAndPassword(req.body.email, req.body.password);
-  if(isValid){
-    const user = await userService.createUser(
-        {
-          "email": req.body.email,
-          "password": req.body.password,
-        }
-      );
-    const tokens = await tokenService.generateAuthTokens(user);
-    const registeredUser = {
-      "user": user,
-      "tokens": tokens,
-    };
-    res.status(httpStatus.OK).send(registeredUser);
-  }
+  const { email, password } = req.body;
+  const user = await authService.loginUserWithEmailAndPassword(email, password);
+  const tokens = await tokenService.generateAuthTokens(user);
+  res.send({ user, tokens });
+  // const user = await authService.loginUserWithEmailAndPassword(req.body.email, req.body.password);
+  // if(user){
+  //   const tokens = await tokenService.generateAuthTokens(user);
+  //   const loginUser = {
+  //     "user": user,
+  //     "tokens": tokens,
+  //   };
+  //   res.status(httpStatus.OK).send(loginUser);
+  // }
 });
 
 module.exports = {

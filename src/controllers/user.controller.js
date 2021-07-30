@@ -43,12 +43,34 @@ const { userService } = require("../services");
  *
  */
 const getUser = catchAsync(async (req, res) => {
-  // console.log("getUser",req.url, req.params.userId);
-  const user = await userService.getUserById(req.params.userId);
-  if(user){
-    // console.log(user);
-    res.send(user);
+    // CRIO_SOLUTION_START_MODULE_UNDERSTANDING_BASICS
+    let data;
+    data = await userService.getUserById(req.params.userId);
+
+  if (!data) {
+    throw new ApiError(httpStatus.NOT_FOUND, "User not found");
   }
+  // CRIO_SOLUTION_START_MODULE_AUTH
+  if (data.email != req.user.email) {
+    throw new ApiError(
+      httpStatus.FORBIDDEN,
+      "User not authorized to access this resource"
+    );
+  }
+  // CRIO_SOLUTION_END_MODULE_AUTH
+    res.send(data);
+  // CRIO_SOLUTION_END_MODULE_UNDERSTANDING_B
+  // // console.log("getUser",req.url, req.params.userId);
+  // const user = await userService.getUserById(req.params.userId);
+  // if(!user){
+  //   // console.log(user);
+  //   throw new ApiError(httpStatus.NOT_FOUND, "No user with given id");
+  // }
+  // if(user.email !== req.user.email){
+  //   throw new ApiError(httpStatus.FORBIDDEN, "Please Authenticate");
+  // }
+  // console.log(user);
+  // res.send(user);
 });
 
 

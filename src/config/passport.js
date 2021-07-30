@@ -2,7 +2,6 @@ const { Strategy: JwtStrategy, ExtractJwt } = require("passport-jwt");
 const config = require("./config");
 const { tokenTypes } = require("./tokens");
 const { User } = require("../models");
-const userServices = require("../services/user.service");
 
 // TODO: CRIO_TASK_MODULE_AUTH - Set mechanism to retrieve Jwt token from user request
 /**
@@ -12,8 +11,11 @@ const userServices = require("../services/user.service");
  */
 const jwtOptions = {
   secretOrKey: config.jwt.secret,
+  // CRIO_SOLUTION_START_MODULE_AUTH
+  jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+  // secretOrKey: config.jwt.secret,
+  // jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
 };
-jwtOptions.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken();
 
 // TODO: CRIO_TASK_MODULE_AUTH - Implement verify callback for passport strategy to find the user whose token is passed
 /**
@@ -28,21 +30,37 @@ jwtOptions.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken();
  * @param done - callback function
  */
 const jwtVerify = async (payload, done) => {
-  try{
-    // const user = await userServices.getUserById(payload.sub);
-    const user = await User.findById(payload.sub);
-    if(user){
-      // console.log(user.name, payload.sub);
-      done(null, user);
-    }
-    else{
-      done(null, false);
-    }
+  if (payload.type !== tokenTypes.ACCESS) {
+    return done(Error("Invalid token type" ))
   }
-  catch(err){
-    done(err, false);
-  }
+  await User.findById(payload.sub, function (err, user) {
+    if (err) {
+      return done(err);
+    }
+    if (!user) {
+      return done(null, false);
+    }
+    return done(null, user);
+  });
 };
+
+// const jwtVerify = async (payload, done) => {
+//   try{
+//     if(payload.type !== tokenTypes.ACCESS){
+//       throw new Error("Invalid token type");
+//     }
+//     const user = await User.findById(payload.sub);
+//     if(user){
+//       return done(null, user);
+//     }
+//     else{
+//       return done(null, false);
+//     }
+//   }
+//   catch(err){
+//     done(err, false);
+//   }
+// };
 
 // TODO: CRIO_TASK_MODULE_AUTH - Uncomment below lines of code once the "jwtVerify" and "jwtOptions" are implemented
 const jwtStrategy = new JwtStrategy(jwtOptions, jwtVerify);

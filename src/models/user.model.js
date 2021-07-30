@@ -51,25 +51,12 @@ const userSchema = mongoose.Schema(
   }
 );
 
-userSchema.pre("save", function(next) {
-  var user = this;
-
-  if (!user.isModified('password')){
-    return next();
+userSchema.pre("save", async function (next) {
+  const user = this;
+  if (user.isModified("password")) {
+    user.password = await bcrypt.hash(user.password, 10);
   }
-
-  bcrypt.genSalt(SALT_WORK_FACTOR, function(err, salt) {
-    if (err){
-      return next(err);
-    }
-    bcrypt.hash(user.password, salt, function(err, hash) {
-        if (err){
-          return next(err);
-        }
-        user.password = hash;
-        next();
-    });
-  });
+  next();
 });
 
 // TODO: CRIO_TASK_MODULE_UNDERSTANDING_BASICS - Implement the isEmailTaken() static method
@@ -79,12 +66,7 @@ userSchema.pre("save", function(next) {
  * @returns {Promise<boolean>}
  */
 userSchema.statics.isEmailTaken = async function (email){
-  const isTaken = await this.findOne({"email": email});
-  // console.log(isTaken);
-  if(isTaken === null){
-    return false;
-  }
-  return true;
+  return await this.findOne({ email });
 }
 
 /**
@@ -92,13 +74,16 @@ userSchema.statics.isEmailTaken = async function (email){
  * @param {string} password
  * @returns {Promise<boolean>}
  */
+// userSchema.methods.isPasswordMatch = async function (password) {
+//   const isMatch = await bcrypt.compare(password, this.password);
+//   return isMatch;
+// };
+
 userSchema.methods.isPasswordMatch = async function (password) {
-  bcrypt.compare(password, this.password, function(err, isMatch) {
-    if (err){
-      return false;
-    }
-    return true;
-  });
+  // CRIO_SOLUTION_START_MODULE_AUTH
+  const user = this;
+  return bcrypt.compare(password, user.password);
+  // CRIO_SOLUTION_END_MODULE_AUTH
 };
 
 
@@ -111,6 +96,6 @@ userSchema.methods.isPasswordMatch = async function (password) {
 /**
  * 
  */
-const User = mongoose.model("users", userSchema);
+const User = mongoose.model("User", userSchema);
 
 module.exports = {User};

@@ -17,12 +17,19 @@ const { tokenTypes } = require("../config/tokens");
  * @returns {string}
  */
 const generateToken = (userId, expires, type, secret = config.jwt.secret) => {
-  const token = jwt.sign({
-    "sub": userId,
-    "exp": expires,
-    "type": type,
-  }, secret);
-  return token;
+  const payload = {
+    sub: userId,
+    iat: Math.floor(Date.now() / 1000),
+    exp: expires,
+    type,
+  };
+  return jwt.sign(payload, secret);
+  // const token = jwt.sign({
+  //   sub: userId,
+  //   exp: expires,
+  //   type: type,
+  // }, secret);
+  // return token;
 };
 
 /**
@@ -41,17 +48,46 @@ const generateToken = (userId, expires, type, secret = config.jwt.secret) => {
  * }
  */
 const generateAuthTokens = async (user) => {
-  const expires = Math.floor(Date.now() / 1000) + process.env.JWT_ACCESS_EXPIRATION_MINUTES * 60;
-  const token = generateToken(user._id, expires, tokenTypes.ACCESS);
-  // console.log("In generateAuthTokens", user.userId, token);
-  const ret = {
-    "access": {
-      "token": token,
-      "expires": new Date(new Date()+expires*1000),
+  const exp_sec = config.jwt.accessExpirationMinutes * 60;
+  let time = Date.now();
+  let timeOfExpiry = Math.floor(time/1000) + exp_sec;
+  let token = generateToken(user._id,timeOfExpiry,tokenTypes.ACCESS);
+  let dateExpiry = new Date(timeOfExpiry*1000);
+  let res = {
+    "access" : {
+            "token" : token,
+            "expires" : dateExpiry
     }
   };
-  return ret;
+  return res;
 };
+// const generateAuthTokens = async (user) => {
+  
+  // const accessTokenExpires =
+  //   Math.floor(Date.now() / 1000) + config.jwt.accessExpirationMinutes * 60;
+
+  // const accessToken = generateToken(
+  //   user._id,
+  //   accessTokenExpires,
+  //   tokenTypes.ACCESS
+  // );
+
+  // return {
+  //   access: {
+  //     token: accessToken,
+  //     expires: new Date(accessTokenExpires * 1000),
+  //   },
+  // };
+  // const expires = Math.floor(Date.now() / 1000) + process.env.JWT_ACCESS_EXPIRATION_MINUTES * 60;
+  // const token = generateToken(user._id, expires, tokenTypes.ACCESS);
+  // const ret = {
+  //   access: {
+  //     token: token,
+  //     expires: new Date(new Date()+expires*1000),
+  //   }
+  // };
+  // return ret;
+// };
 // console.log(generateAuthTokens({userId: "6005988f06ea6b360cb75747"}));
 module.exports = {
   generateToken,
