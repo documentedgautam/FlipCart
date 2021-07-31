@@ -9,7 +9,6 @@ const ApiError = require("../utils/ApiError");
  */
 const validate = (schema) => (req, res, next) => {
   // Request body should be JSON, if present
-  // console.log(Object.keys(req.body).length, Object.keys(req.body));
   if (Object.keys(req.body).length !== 0 && !req.is("application/json")) {
     return next(
       new ApiError(
@@ -24,7 +23,7 @@ const validate = (schema) => (req, res, next) => {
 
   // cherry-pick from the request object ["params", "query", "body"] fields
   const object = pick(req, Object.keys(validSchema));
-  // console.log("validate", req);
+
   // Compile schema to Joi schema object and validate the request object
   const { value, error } = Joi.compile(validSchema)
     .prefs({ errors: { label: "key" } })
