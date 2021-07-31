@@ -2,7 +2,7 @@ const httpStatus = require("http-status");
 const { Cart, Product } = require("../models");
 const ApiError = require("../utils/ApiError");
 const config = require("../config/config");
-const { getProductById } = require("./product.service");
+const { getProductById, getProducts } = require("./product.service");
 
 // TODO: CRIO_TASK_MODULE_CART - Implement the Cart service methods
 
@@ -152,6 +152,7 @@ const updateProductInCart = async (user, productId, quantity) => {
  * @throws {ApiError}
  */
 const deleteProductFromCart = async (user, productId) => {
+  // console.log("productid to find", productId);
   var cart;
   try{
     cart = await getCartByUser(user);
@@ -160,10 +161,16 @@ const deleteProductFromCart = async (user, productId) => {
     throw new ApiError(httpStatus.BAD_REQUEST, "User does not have a cart");
   }
   const product = await getProductById(productId);
+  // const allProduct = await Product.find({});
+  // console.log("allProducts here", allProduct);
+  // for(let i = 0; i < allProduct.length; ++i){
+  //   console.log(allProduct[i].name, allProduct[i]._id);
+  // }
   if(!product){
     throw new ApiError(httpStatus.BAD_REQUEST, "Product doesn't exist in database");
   }
   var inCart = isProductInCart(cart, product);
+  // console.log(cart, product, inCart);
   if(inCart == -1){
     throw new ApiError(httpStatus.BAD_REQUEST, "Product not in cart");
   }

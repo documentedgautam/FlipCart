@@ -76,11 +76,13 @@ const updateProductInCart = catchAsync(async (req, res) => {
     );
     res.status(httpStatus.OK).send(cart);
   }
-  const cart = await cartService.deleteProductFromCart(
-    req.user,
-    req.body.productId
-  );
-  res.status(httpStatus[204]).send(cart);
+  if(req.body.quantity == 0){
+    const cart = await cartService.deleteProductFromCart(
+      req.user,
+      req.body.productId
+    );
+    res.status(httpStatus.NO_CONTENT).send(cart);
+  }
 });
 
 
