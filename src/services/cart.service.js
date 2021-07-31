@@ -2,13 +2,13 @@ const httpStatus = require("http-status");
 const { Cart, Product } = require("../models");
 const ApiError = require("../utils/ApiError");
 const config = require("../config/config");
-const { getProductById, getProducts } = require("./product.service");
+const { getProductById} = require("./product.service");
 
 // TODO: CRIO_TASK_MODULE_CART - Implement the Cart service methods
 
-const isProductInCart = (cart, product) => {
+const isProductInCart = (cart, productId) => {
   for(let i = 0; i < cart.cartItems.length; ++i){
-    if(cart.cartItems[i].product.name == product.name){
+    if(cart.cartItems[i].product._id == productId){
       return i;
     }
   }
@@ -76,7 +76,7 @@ const addProductToCart = async (user, productId, quantity) => {
   if(!product){
     throw new ApiError(httpStatus.BAD_REQUEST, "Product doesn't exist in database");
   }
-  const inCart = isProductInCart(cart, product);
+  const inCart = isProductInCart(cart, productId);
   if(inCart != -1){
     throw new ApiError(httpStatus.BAD_REQUEST, "Product already in cart. Use the cart sidebar to update or remove product from cart");
   }
@@ -125,7 +125,7 @@ const updateProductInCart = async (user, productId, quantity) => {
   if(!product){
     throw new ApiError(httpStatus.BAD_REQUEST, "Product doesn't exist in database");
   }
-  const inCart = isProductInCart(cart, product);
+  const inCart = isProductInCart(cart, productId);
   if(inCart == -1){
     throw new ApiError(httpStatus.BAD_REQUEST, "Product not in cart");
   }
@@ -160,16 +160,11 @@ const deleteProductFromCart = async (user, productId) => {
   catch(err){
     throw new ApiError(httpStatus.BAD_REQUEST, "User does not have a cart");
   }
-  const product = await getProductById(productId);
-  // const allProduct = await Product.find({});
-  // console.log("allProducts here", allProduct);
-  // for(let i = 0; i < allProduct.length; ++i){
-  //   console.log(allProduct[i].name, allProduct[i]._id);
+  // const product = await Product.findOne({_id: productId});
+  // if(!product){
+  //   throw new ApiError(httpStatus.BAD_REQUEST, "Product doesn't exist in database");
   // }
-  if(!product){
-    throw new ApiError(httpStatus.BAD_REQUEST, "Product doesn't exist in database");
-  }
-  var inCart = isProductInCart(cart, product);
+  var inCart = isProductInCart(cart, productId);
   // console.log(cart, product, inCart);
   if(inCart == -1){
     throw new ApiError(httpStatus.BAD_REQUEST, "Product not in cart");

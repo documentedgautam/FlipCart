@@ -71,12 +71,8 @@ createUser = async (userBody) => {
  * @returns {Promise<User>}
  */
 const getUserAddressById = async (id) => {
-    const user = await getUserById(id);
-    const data = {
-        "address": user.address
-    }
-    // return user;
-    return data;
+    const user = await User.findOne({_id: id}, {address: 1, email: 1});
+    return user;
 };
 
 /**

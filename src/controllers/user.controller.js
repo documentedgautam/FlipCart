@@ -66,7 +66,12 @@ const getUser = catchAsync(async (req, res) => {
     );
   }
   if(req.query.q){
-    res.send(await userService.getUserAddressById(data._id));
+    const user = await userService.getUserAddressById(data._id);
+    const addressData = {
+      address: user.address
+    }
+    // console.log(user, addressData);
+    res.send(addressData);
   }
   res.send(data);
   // CRIO_SOLUTION_END_MODULE_UNDERSTANDING_B
