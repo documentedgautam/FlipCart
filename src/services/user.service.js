@@ -71,6 +71,12 @@ createUser = async (userBody) => {
  * @returns {Promise<User>}
  */
 const getUserAddressById = async (id) => {
+    const user = await getUserById(id);
+    const data = {
+        "address": user.address
+    }
+    // return user;
+    return data;
 };
 
 /**

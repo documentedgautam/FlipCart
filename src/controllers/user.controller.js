@@ -51,9 +51,9 @@ const { userService } = require("../services");
  *
  */
 const getUser = catchAsync(async (req, res) => {
-    // CRIO_SOLUTION_START_MODULE_UNDERSTANDING_BASICS
-    let data;
-    data = await userService.getUserById(req.params.userId);
+  // CRIO_SOLUTION_START_MODULE_UNDERSTANDING_BASICS
+  let data;
+  data = await userService.getUserById(req.params.userId);
 
   if (!data) {
     throw new ApiError(httpStatus.NOT_FOUND, "User not found");
@@ -65,8 +65,10 @@ const getUser = catchAsync(async (req, res) => {
       "User not authorized to access this resource"
     );
   }
-  // CRIO_SOLUTION_END_MODULE_AUTH
-    res.send(data);
+  if(req.query.q){
+    res.send(await userService.getUserAddressById(data._id));
+  }
+  res.send(data);
   // CRIO_SOLUTION_END_MODULE_UNDERSTANDING_B
   // // console.log("getUser",req.url, req.params.userId);
   // const user = await userService.getUserById(req.params.userId);

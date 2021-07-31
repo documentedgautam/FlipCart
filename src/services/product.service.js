@@ -3,7 +3,7 @@ const { Product } = require("../models");
 /**
  * Get Product by id
  * @param {ObjectId} id
- * @returns {Promise<User>}
+ * @returns {Promise<Product>}
  */
 const getProductById = async (id) => {
   return Product.findById(id);
