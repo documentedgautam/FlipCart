@@ -93,7 +93,7 @@ describe("Cart routes", () => {
         .send();
 
       // TODO: CRIO_TASK_MODULE_TEST - Assert if status code is 204
-      expect(res.status).toEqual(httpStatus.OK);
+      expect(res.status).toEqual(httpStatus.NO_CONTENT);
 
       // TODO: CRIO_TASK_MODULE_TEST - Get the cart for "userOne" and assert if
       // - Cart exists
