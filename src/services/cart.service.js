@@ -152,7 +152,6 @@ const updateProductInCart = async (user, productId, quantity) => {
  * @throws {ApiError}
  */
 const deleteProductFromCart = async (user, productId) => {
-  // console.log("productid to find", productId);
   var cart;
   try{
     cart = await getCartByUser(user);
@@ -160,12 +159,7 @@ const deleteProductFromCart = async (user, productId) => {
   catch(err){
     throw new ApiError(httpStatus.BAD_REQUEST, "User does not have a cart");
   }
-  // const product = await Product.findOne({_id: productId});
-  // if(!product){
-  //   throw new ApiError(httpStatus.BAD_REQUEST, "Product doesn't exist in database");
-  // }
   var inCart = isProductInCart(cart, productId);
-  // console.log(cart, product, inCart);
   if(inCart == -1){
     throw new ApiError(httpStatus.BAD_REQUEST, "Product not in cart");
   }
@@ -173,6 +167,14 @@ const deleteProductFromCart = async (user, productId) => {
   await cart.save();
   return cart;
 };
+
+const getCartPrice = (cart) => {
+  var price = 0;
+  for(let i = 0; i < cart.cartItems.length; ++i){
+    price += cart.cartItems[i].product.cost;
+  }
+  return price;
+}
 
 // TODO: CRIO_TASK_MODULE_TEST - Implement checkout function
 /**
@@ -184,6 +186,28 @@ const deleteProductFromCart = async (user, productId) => {
  * @throws {ApiError} when cart is invalid
  */
 const checkout = async (user) => {
+  var cart;
+  try{
+    cart = await getCartByUser(user);
+  }
+  catch(err){
+    throw new ApiError(httpStatus.NOT_FOUND, "User does not have a cart");
+  }
+  if(cart.cartItems.length==0){
+    throw new ApiError(httpStatus.BAD_REQUEST, "Cart does not have any items");
+  }
+  else if(!(await user.hasSetNonDefaultAddress())){
+    throw new ApiError(httpStatus.BAD_REQUEST, "Please set your address first");
+  }
+  const cartMoney = getCartPrice(cart);
+  if(cartMoney > user.walletMoney){
+    throw new ApiError(httpStatus.BAD_REQUEST, "User does not have enough money in wallet");
+  }
+  cart.cartItems = [];
+  await cart.save();
+  user.walletMoney = user.walletMoney - cartMoney;
+  await user.save();
+  return cart;
 };
 
 module.exports = {

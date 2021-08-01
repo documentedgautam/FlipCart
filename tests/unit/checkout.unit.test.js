@@ -38,7 +38,12 @@ describe("Cart test", () => {
        *  "stack": "<Error-stack-trace-if-present>"
        * }
        */
-       expect(true).toEqual(false);
+      expect(res).rejects.toThrow(ApiError);
+      expect(res).rejects.toEqual(
+        expect.objectContaining({
+          statusCode: httpStatus.NOT_FOUND,
+        })
+      );
     });
 
     it("should throw 400 error if user's cart doesn't have any product", async () => {
@@ -50,6 +55,12 @@ describe("Cart test", () => {
       // TODO: CRIO_TASK_MODULE_TEST - Assert if
       // - ApiError is thrown
       // - the "statusCode" field of response is "400 BAD REQUEST"
+      expect(res).rejects.toThrow(ApiError);
+      expect(res).rejects.toEqual(
+        expect.objectContaining({
+          statusCode: httpStatus.BAD_REQUEST,
+        })
+      );
     });
 
     it("should throw 400 error if address is not set - when User.hasSetNonDefaultAddress() returns false", async () => {
@@ -67,6 +78,12 @@ describe("Cart test", () => {
       // TODO: CRIO_TASK_MODULE_TEST - Assert if
       // - ApiError is thrown
       // - the "statusCode" field of response is "400 BAD REQUEST"
+      expect(res).rejects.toThrow(ApiError);
+      expect(res).rejects.toEqual(
+        expect.objectContaining({
+          statusCode: httpStatus.BAD_REQUEST,
+        })
+      );
     });
 
     it("should throw 400 error if wallet balance is insufficient", async () => {
@@ -85,11 +102,16 @@ describe("Cart test", () => {
       // TODO: CRIO_TASK_MODULE_TEST - Assert if
       // - ApiError is thrown
       // - the "statusCode" field of response is "400 BAD REQUEST"
+      expect(res).rejects.toThrow(ApiError);
+      expect(res).rejects.toEqual(
+        expect.objectContaining({
+          statusCode: httpStatus.BAD_REQUEST,
+        })
+      );
     });
 
     it("should update user balance and empty the cart on success", async () => {
       let userOneFinal = { ...userOne };
-
       // Mock the save() method on userOneFinal as it's not an instance of User object
       userOneFinal.save = jest.fn();
 
@@ -111,13 +133,13 @@ describe("Cart test", () => {
       mockingoose(Cart).toReturn(cartWithProductsUserOne, "findOne");
 
       // Call the method to be tested - `checkout()`
+      let initialMoney = userOneFinal.walletMoney;
       await cartService.checkout(userOneFinal);
 
       // Assert User model's hasSetNonDefaultAddress() instance method was called
       expect(hasSetNonDefaultAddressMock.mock.calls.length).not.toBe(0);
-
       // TODO: CRIO_TASK_MODULE_TEST - Assert that the wallet balance of user was reduced
-       expect(true).toEqual(false);
+      expect(userOneFinal.walletMoney).toBeLessThan(initialMoney);
     });
   });
 });

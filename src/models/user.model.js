@@ -80,10 +80,16 @@ userSchema.statics.isEmailTaken = async function (email){
 // };
 
 userSchema.methods.isPasswordMatch = async function (password) {
-  // CRIO_SOLUTION_START_MODULE_AUTH
   const user = this;
   return bcrypt.compare(password, user.password);
-  // CRIO_SOLUTION_END_MODULE_AUTH
+};
+
+userSchema.methods.hasSetNonDefaultAddress = async function () {
+  const user = this;
+  if(user.address === config.default_address){
+    return false;
+  }
+  return true;
 };
 
 
